@@ -1,0 +1,129 @@
+{
+	"name": "codelabhub",
+	"displayName": "codelabhub",
+	"description": "",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.67.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:codelabhub.codelabSignUp",
+		"onCommand:codelabhub.refreshLab",
+		"onCommand:codelabhub.fetchAndSaveProblem",
+		"onCommand:codelabhub.deleteProblem",
+		"onCommand:codelabhub.uploadProblem",
+		"onCommand:codelabhub.submitCode",
+		"onCommand:codelabhub.login",
+		"onCommand:codelabhub.logout",
+		"onCommand:codelabhub.makeLab",
+		"onCommand:codelabhub.deleteLab",
+		"onView:labView",
+		"onView:CodeLabHub-Login"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "codelabhub.refreshLab",
+				"title": "Refresh Problems",
+				"icon": {
+					"dark": "media/dark/refresh.svg",
+					"light": "media/light/refresh.svg"
+				},
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.login",
+				"title": "Login",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.logout",
+				"title": "Sign Up",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.makeLab",
+				"title": "Make Lab",
+				"category": "CodeLabHub",
+				"icon": "$(add)"
+			},
+			{
+				"command": "codelabhub.deleteLab",
+				"title": "Delete Lab",
+				"category": "CodeLabHub",
+				"icon": "$(trash)"
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "CodeLabHub",
+					"title": "CodeLabHub",
+					"icon": "media/dep.png"
+				}
+			]
+		},
+		"views": {
+			"CodeLabHub": [
+				{
+					"id": "labView",
+					"name": "Lab"
+				},
+				{
+					"id": "CodeLabHub-Login",
+					"name": "Login"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "codelabhub.makeLab",
+					"when": "view == labView",
+					"group": "navigation@1"
+				},
+				{
+					"command": "codelabhub.deleteLab",
+					"when": "view == labView",
+					"group": "navigation@2"
+				},
+				{
+					"command": "codelabhub.refreshLab",
+					"when": "view == labView",
+					"group": "navigation@3"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "webpack",
+		"watch": "webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.67.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "14.x",
+		"@typescript-eslint/eslint-plugin": "^5.21.0",
+		"@typescript-eslint/parser": "^5.21.0",
+		"eslint": "^8.14.0",
+		"glob": "^8.0.1",
+		"mocha": "^9.2.2",
+		"typescript": "^4.6.4",
+		"ts-loader": "^9.2.8",
+		"webpack": "^5.70.0",
+		"webpack-cli": "^4.9.2",
+		"@vscode/test-electron": "^2.1.3"
+	}
+}
