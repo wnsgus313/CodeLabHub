@@ -13,10 +13,13 @@
 		"onCommand:codelabhub.refreshLab",
 		"onCommand:codelabhub.deleteProblem",
 		"onCommand:codelabhub.uploadProblem",
-		"onCommand:codelabhub.submitCode",
+		"onCommand:extension.fetchProblem",
 		"onCommand:codelabhub.makeLab",
 		"onCommand:codelabhub.deleteLab",
 		"onCommand:codelabhub.submitCode",
+		"onCommand:codelabhub.inviteMember",
+		"onCommand:codelabhub.deleteMember",
+		"onCommand:codelabhub.inviteTA",
 
 		"onView:labView",
 		"onView:CodeLabHub-Login"
@@ -26,7 +29,7 @@
 		"commands": [
 			{
 				"command": "codelabhub.refreshLab",
-				"title": "Refresh Problems",
+				"title": "Refresh",
 				"icon": {
 					"dark": "media/dark/refresh.svg",
 					"light": "media/light/refresh.svg"
@@ -52,6 +55,12 @@
 				"icon": "$(add)"
 			},
 			{
+				"command": "codelabhub.fetchProblem",
+				"title": "Fetch Problem",
+				"category": "CodeLabHub",
+				"icon": "$(cloud-download)"
+			},
+			{
 				"command": "codelabhub.deleteProblem",
 				"title": "Delete Problem",
 				"category": "CodeLabHub",
@@ -62,6 +71,24 @@
 				"title": "Submit Code",
 				"category": "CodeLabHub",
 				"icon": "$(cloud-upload)"
+			},
+			{
+				"command": "codelabhub.inviteMember",
+				"title": "Invite Member",
+				"category": "CodeLabHub",
+				"icon": "$(person-add)"
+			},
+			{
+				"command": "codelabhub.deleteMember",
+				"title": "Delete Member",
+				"category": "CodeLabHub",
+				"icon": "$(stop)"
+			},
+			{
+				"command": "codelabhub.inviteTA",
+				"title": "Invite TA",
+				"category": "CodeLabHub",
+				"icon": "$(reactions)"
 			}
 		],
 		"viewsContainers": {
@@ -115,9 +142,29 @@
 					"group": "inline@3"
 				},
 				{
-					"command": "codelabhub.submitCode",
-					"when": "view == labView && viewItem == problem_student || viewItem == problem_admin",
+					"command": "codelabhub.fetchProblem",
+					"when": "view == labView && viewItem == problem_admin || viewItem == problem_student",
 					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.submitCode",
+					"when": "view == labView && viewItem == problem_admin || viewItem == problem_student",
+					"group": "inline@0"
+				},
+				{
+					"command": "codelabhub.inviteMember",
+					"when": "view == labView && viewItem == members_admin",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.deleteMember",
+					"when": "view == labView && viewItem == member_admin",
+					"group": "inline@3"
+				},
+				{
+					"command": "codelabhub.inviteTA",
+					"when": "view == labView && viewItem == members_admin",
+					"group": "inline@2"
 				}
 			]
 		}
