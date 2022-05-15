@@ -43,6 +43,9 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             else if(element.contextValue?.substring(0,8) === 'problems'){
                 return Promise.resolve(this.makeProblem(labJsonPath, element.order));
             }
+            else if(element.contextValue?.substring(0, 7) === 'members'){
+                return Promise.resolve(this.makeMember(labJsonPath, element.order));
+            }
 
 			return Promise.resolve([]);
 		} else {
@@ -115,14 +118,35 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
         }
         else if(role === 'student'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role));
-            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members', order, role));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role));
+            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role));
             res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role));
             res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
             res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
         }
 
         return res;
+    }
+
+    // 멤버 추가
+    private makeMember(labJsonPath: string, order: number | any){
+        if (this.pathExists(labJsonPath)) {
+			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
+            console.log('makeMember');
+			const parseMember = (member: string): Dependency => {
+				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'member_'+labJson['roles'][order], labJson['roles'][order]); // problem들 가져오기
+			};
+
+            let members:string[] = [];
+            for(let i=0; i<Object.keys(labJson['labs'][order]['members']).length; i++){
+                members.push(labJson['labs'][order]['members'][i]);
+            }
+            let res = members.map(member => parseMember(member));
+
+			return res;
+		} else {
+			return [];
+		}
     }
 
 }

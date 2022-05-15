@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const labProvider = new LabProvider(rootPath, info);
 	vscode.window.registerTreeDataProvider('labView', labProvider); // treeData 등록
 	
-	// treeView refresh
+	// treeView refresh, labs.json 가져오기
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', () => {
 		console.log('command : refreshLab');
 		labProvider.refresh();

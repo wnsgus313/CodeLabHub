@@ -10,16 +10,14 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:codelabhub.codelabSignUp",
 		"onCommand:codelabhub.refreshLab",
-		"onCommand:codelabhub.fetchAndSaveProblem",
 		"onCommand:codelabhub.deleteProblem",
 		"onCommand:codelabhub.uploadProblem",
 		"onCommand:codelabhub.submitCode",
-		"onCommand:codelabhub.login",
-		"onCommand:codelabhub.logout",
 		"onCommand:codelabhub.makeLab",
 		"onCommand:codelabhub.deleteLab",
+		"onCommand:codelabhub.submitCode",
+
 		"onView:labView",
 		"onView:CodeLabHub-Login"
 	],
@@ -33,16 +31,6 @@
 					"dark": "media/dark/refresh.svg",
 					"light": "media/light/refresh.svg"
 				},
-				"category": "CodeLabHub"
-			},
-			{
-				"command": "codelabhub.login",
-				"title": "Login",
-				"category": "CodeLabHub"
-			},
-			{
-				"command": "codelabhub.logout",
-				"title": "Sign Up",
 				"category": "CodeLabHub"
 			},
 			{
@@ -68,6 +56,12 @@
 				"title": "Delete Problem",
 				"category": "CodeLabHub",
 				"icon": "$(trash)"
+			},
+			{
+				"command": "codelabhub.submitCode",
+				"title": "Submit Code",
+				"category": "CodeLabHub",
+				"icon": "$(cloud-upload)"
 			}
 		],
 		"viewsContainers": {
@@ -113,12 +107,17 @@
 				{
 					"command": "codelabhub.uploadProblem",
 					"when": "view == labView && viewItem == problems_admin",
-					"group": "inline@1"
+					"group": "inline@2"
 				},
 				{
 					"command": "codelabhub.deleteProblem",
 					"when": "view == labView && viewItem == problem_admin",
-					"group": "inline@2"
+					"group": "inline@3"
+				},
+				{
+					"command": "codelabhub.submitCode",
+					"when": "view == labView && viewItem == problem_student || viewItem == problem_admin",
+					"group": "inline@1"
 				}
 			]
 		}
