@@ -40,7 +40,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             if(element.contextValue === 'labs'){
                 return Promise.resolve(this.makeFunction(element.order, element.role)); // 몇번째 lab인지 알 수 있도록
             }
-            else if(element.contextValue === 'problem'){
+            else if(element.contextValue?.substring(0,8) === 'problems'){
                 return Promise.resolve(this.makeProblem(labJsonPath, element.order));
             }
 
@@ -88,7 +88,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
 			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
             console.log('makeProblem');
 			const parseProblem = (problem: string): Dependency => {
-				return new Dependency(problem, vscode.TreeItemCollapsibleState.None, problem); // problem들 가져오기
+				return new Dependency(problem, vscode.TreeItemCollapsibleState.None, 'problem_'+labJson['roles'][order], labJson['roles'][order]); // problem들 가져오기
 			};
 
             let problems:string[] = [];
@@ -108,18 +108,18 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     {
         let res: Dependency[] = [];
         if(role === 'admin'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problem', order));
-            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'member', order));
-            res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submission', order));
-            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role));
+            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members', order, role));
+            res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submissions', order, role));
+            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
+            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
         }
         else if(role === 'student'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problem', order));
-            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'member', order));
-            res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluation', order));
-            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role));
+            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members', order, role));
+            res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role));
+            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
+            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
         }
 
         return res;
@@ -133,13 +133,15 @@ export class Dependency extends vscode.TreeItem {
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly contextValue?: string, // label과 비슷한 기능으로 하위 트리 만들 떄 사용
         public readonly order?: number, // labs 순서를 알 수 있도록
-        public readonly role?: string,
-        public readonly description?: string
+        public readonly role?: string, // 권한
+        public readonly description?: string,
+        public readonly command?: vscode.Command
 	) {
 		super(label, collapsibleState);
 		this.contextValue = contextValue;
         this.description = description;
         this.order = order;
         this.role = role;
+        this.command = command;
 	}
 }

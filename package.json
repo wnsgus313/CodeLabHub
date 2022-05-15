@@ -56,6 +56,18 @@
 				"title": "Delete Lab",
 				"category": "CodeLabHub",
 				"icon": "$(trash)"
+			},
+			{
+				"command": "codelabhub.uploadProblem",
+				"title": "Upload Problem",
+				"category": "CodeLabHub",
+				"icon": "$(add)"
+			},
+			{
+				"command": "codelabhub.deleteProblem",
+				"title": "Delete Problem",
+				"category": "CodeLabHub",
+				"icon": "$(trash)"
 			}
 		],
 		"viewsContainers": {
@@ -95,6 +107,18 @@
 					"command": "codelabhub.refreshLab",
 					"when": "view == labView",
 					"group": "navigation@3"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "codelabhub.uploadProblem",
+					"when": "view == labView && viewItem == problems_admin",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.deleteProblem",
+					"when": "view == labView && viewItem == problem_admin",
+					"group": "inline@2"
 				}
 			]
 		}
