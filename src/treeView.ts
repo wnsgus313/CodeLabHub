@@ -24,7 +24,6 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
 	}
 
     getTreeItem(element: Dependency): vscode.TreeItem {
-        let labJsonPath = path.join(this.workspaceRoot, 'labs.json');
 
 		return element;
     }
@@ -192,7 +191,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             let submissionOrder: number | any = await sync();
 
 			const parseMember = (member: string, index: number): Dependency => {
-				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'member_' + role, order, role, labJson['labs'][order]['problems'][submissionOrder]['submission'][index]['evaluation']); // problem들 가져오기
+				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'submission_member_' + role, order, role, labJson['labs'][order]['problems'][submissionOrder]['submission'][index]['evaluation']); // problem들 가져오기
 			};
 
             let members:string[] = [];
