@@ -69,7 +69,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', () => {
 		console.log('command : submitCode');
 		labProvider.refresh();
-	}));	
+	}));
+	
+	// admin, student 채팅
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.labChat', () => {
+		console.log('command : labChat');
+		labProvider.refresh();
+	}));
 }
 
 export function deactivate() {}

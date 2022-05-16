@@ -20,6 +20,7 @@
 		"onCommand:codelabhub.inviteMember",
 		"onCommand:codelabhub.deleteMember",
 		"onCommand:codelabhub.inviteTA",
+		"oncommand:codelabhub.labChat",
 
 		"onView:labView",
 		"onView:CodeLabHub-Login"
@@ -30,10 +31,7 @@
 			{
 				"command": "codelabhub.refreshLab",
 				"title": "Refresh",
-				"icon": {
-					"dark": "media/dark/refresh.svg",
-					"light": "media/light/refresh.svg"
-				},
+				"icon": "$(refresh)",
 				"category": "CodeLabHub"
 			},
 			{
@@ -89,6 +87,12 @@
 				"title": "Invite TA",
 				"category": "CodeLabHub",
 				"icon": "$(reactions)"
+			},
+			{
+				"command": "codelabhub.labChat",
+				"title": "Lab Chatting",
+				"category": "CodeLabHub",
+				"icon": "$(comment)"
 			}
 		],
 		"viewsContainers": {
@@ -121,7 +125,7 @@
 				},
 				{
 					"command": "codelabhub.deleteLab",
-					"when": "view == labView",
+					"when": "view == labView && viewItem == labs_admin",
 					"group": "navigation@2"
 				},
 				{
@@ -165,6 +169,11 @@
 					"command": "codelabhub.inviteTA",
 					"when": "view == labView && viewItem == members_admin",
 					"group": "inline@2"
+				},
+				{
+					"command": "codelabhub.labChat",
+					"when": "view == labView && viewItem == chat",
+					"group": "inline@1"
 				}
 			]
 		}
