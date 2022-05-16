@@ -5,6 +5,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
 		? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined; // 워크 스페이스 경로
 	const info = context.globalState;
+	const url = vscode.workspace.getConfiguration().get('codelabhub.root-url'); // root url
 
 	const labProvider = new LabProvider(rootPath, info);
 	vscode.window.registerTreeDataProvider('labView', labProvider); // treeData 등록
@@ -63,7 +64,18 @@ export function activate(context: vscode.ExtensionContext) {
 		labProvider.refresh();
 	}));
 
+	// admin 모니터링
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.monitoringLog', () => {
+		console.log('command : monitoringLog');
+		labProvider.refresh();
+	}));
+	// admin 모니터링 초기화
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.initializeLog', () => {
+		console.log('command : initializeLog');
+		labProvider.refresh();
+	}));
 
+	
 
 	// admin, student가 Code 제출 && 채점
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', () => {
@@ -76,6 +88,19 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log('command : labChat');
 		labProvider.refresh();
 	}));
+
+	// student 모니터링 log 시작
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.sendLog', () => {
+		console.log('command : sendLog');
+		labProvider.refresh();
+	}));
+
+	// student 모니터링 log 중지
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.stopLog', () => {
+		console.log('command : stopLog');
+		labProvider.refresh();
+	}));
+
 }
 
 export function deactivate() {}

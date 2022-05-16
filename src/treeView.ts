@@ -37,7 +37,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
         console.log(element);
         
 		if (element) {
-            if(element.contextValue === 'labs'){
+            if(element.contextValue?.substring(0,4) === 'labs'){
                 return Promise.resolve(this.makeFunction(element.order, element.role)); // 몇번째 lab인지 알 수 있도록
             }
             else if(element.contextValue?.substring(0,8) === 'problems'){
@@ -82,7 +82,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             this.info.update('lab_count', Object.keys(labJson['labs']).length); // lab의 개수 저장
             let res = labs.map((lab, index) => parseLab(lab, index));
 
-			return res.concat(new Dependency('Useful Extensions', vscode.TreeItemCollapsibleState.Collapsed, "Useful"));
+			return res.concat(new Dependency('Useful Extensions', vscode.TreeItemCollapsibleState.Collapsed, "useful_extension"));
 		} else {
 			return [];
 		}
@@ -140,6 +140,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submissions', order, role));
             res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
             res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
+            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role));
         }
         else if(role === 'student'){
             res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role));
@@ -147,6 +148,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             // res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role));
             res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
             res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
+            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role));
         }
 
         return res;

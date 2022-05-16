@@ -21,6 +21,10 @@
 		"onCommand:codelabhub.deleteMember",
 		"onCommand:codelabhub.inviteTA",
 		"oncommand:codelabhub.labChat",
+		"oncommand:codelabhub.sendLog",
+		"oncommand:codelabhub.stopLog",
+		"oncommand:codelabhub.monitoringLog",
+		"oncommand:codelabhub.initializeLog",
 
 		"onView:labView",
 		"onView:CodeLabHub-Login"
@@ -92,7 +96,31 @@
 				"command": "codelabhub.labChat",
 				"title": "Lab Chatting",
 				"category": "CodeLabHub",
-				"icon": "$(comment)"
+				"icon": "$(comment-discussion)"
+			},
+			{
+				"command": "codelabhub.sendLog",
+				"title": "Send Log",
+				"category": "CodeLabHub",
+				"icon": "$(debug-start)"
+			},
+			{
+				"command": "codelabhub.stopLog",
+				"title": "Stop Log",
+				"category": "CodeLabHub",
+				"icon": "$(stop-circle)"
+			},
+			{
+				"command": "codelabhub.monitoringLog",
+				"title": "View Monitoring",
+				"category": "CodeLabHub",
+				"icon": "$(remote-explorer)"
+			},
+			{
+				"command": "codelabhub.initializeLog",
+				"title": "Initialize Monitoring",
+				"category": "CodeLabHub",
+				"icon": "$(refresh)"
 			}
 		],
 		"viewsContainers": {
@@ -124,17 +152,17 @@
 					"group": "navigation@1"
 				},
 				{
-					"command": "codelabhub.deleteLab",
-					"when": "view == labView && viewItem == labs_admin",
-					"group": "navigation@2"
-				},
-				{
 					"command": "codelabhub.refreshLab",
 					"when": "view == labView",
 					"group": "navigation@3"
 				}
 			],
 			"view/item/context": [
+				{
+					"command": "codelabhub.deleteLab",
+					"when": "view == labView && viewItem == labs_admin",
+					"group": "inline@1"
+				},
 				{
 					"command": "codelabhub.uploadProblem",
 					"when": "view == labView && viewItem == problems_admin",
@@ -174,9 +202,41 @@
 					"command": "codelabhub.labChat",
 					"when": "view == labView && viewItem == chat",
 					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.sendLog",
+					"when": "view == labView && viewItem == monitoring_student",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.stopLog",
+					"when": "view == labView && viewItem == monitoring_student",
+					"group": "inline@2"
+				},
+				{
+					"command": "codelabhub.monitoringLog",
+					"when": "view == labView && viewItem == monitoring_admin",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.initializeLog",
+					"when": "view == labView && viewItem == monitoring_admin",
+					"group": "inline@2"
 				}
 			]
-		}
+		},
+		"configuration" :[
+			{
+				"title": "CodeLabHub",
+				"properties": {
+					"codelabhub.root-url": {
+						"description": "Server root url",
+						"type": "string",
+						"default": "http://203.245.41.143:5000/"
+					}
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
