@@ -38,19 +38,19 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
         
 		if (element) {
             if(element.contextValue?.substring(0,4) === 'labs'){
-                return Promise.resolve(this.makeFunction(element.order, element.role)); // 몇번째 lab인지 알 수 있도록
+                return Promise.resolve(this.makeFunction(element.order, element.role, element.labName)); // 몇번째 lab인지 알 수 있도록
             }
             else if(element.contextValue?.substring(0,8) === 'problems'){
-                return Promise.resolve(this.makeProblem(labJsonPath, element.order, element.role));
+                return Promise.resolve(this.makeProblem(labJsonPath, element.order, element.role, element.labName));
             }
             else if(element.contextValue?.substring(0, 7) === 'members'){
-                return Promise.resolve(this.makeMember(labJsonPath, element.order, element.role));
+                return Promise.resolve(this.makeMember(labJsonPath, element.order, element.role, element.labName));
             }
             else if(element.contextValue?.substring(0, 11) === 'submissions'){
-                return Promise.resolve(this.makeSubmissionProblem(labJsonPath, element.order, element.role));
+                return Promise.resolve(this.makeSubmissionProblem(labJsonPath, element.order, element.role, element.labName));
             }
             else if(element.contextValue?.substring(0, 18) === 'submission_problem'){
-                return Promise.resolve(this.makeSubmission(labJsonPath, element.order, element.role, element.label));
+                return Promise.resolve(this.makeSubmission(labJsonPath, element.order, element.role, element.label, element.labName));
             }
 
 			return Promise.resolve([]);
@@ -72,7 +72,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             const roles = labJson['roles'];
 
 			const parseLab = (labName: string, index: number): Dependency => {
-				return new Dependency(labName, vscode.TreeItemCollapsibleState.Collapsed, "labs_" + roles[index], index, roles[index]);
+				return new Dependency(labName, vscode.TreeItemCollapsibleState.Collapsed, "labs_" + roles[index], index, roles[index], labName);
 			};
 
             let labs:string[] = [];
@@ -89,12 +89,12 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     }
 
     // 문제 추가
-    private makeProblem(labJsonPath: string, order: number | any, role: string | any): Dependency[] {
+    private makeProblem(labJsonPath: string, order: number | any, role: string | any, labName: string | any): Dependency[] {
         if (this.pathExists(labJsonPath)) {
 			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
             console.log('makeProblem');
 			const parseProblem = (problem: string, index: number): Dependency => {
-                return new Dependency(problem, vscode.TreeItemCollapsibleState.None, 'problem_' + labJson['roles'][order], order, labJson['roles'][order], labJson['labs'][order]['problems'][index]['evaluation']); // problem들 가져오기
+                return new Dependency(problem, vscode.TreeItemCollapsibleState.None, 'problem_' + labJson['roles'][order], order, labJson['roles'][order], labName, labJson['labs'][order]['problems'][index]['evaluation']); // problem들 가져오기
             };
 
             let problems:string[] = [];
@@ -110,12 +110,12 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     }
 
     // 교수 submission 하위 문제 추가
-    private makeSubmissionProblem(labJsonPath: string, order: number | any, role: string | any): Dependency[] {
+    private makeSubmissionProblem(labJsonPath: string, order: number | any, role: string | any, labName: string | any): Dependency[] {
         if (this.pathExists(labJsonPath)) {
 			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
             console.log('makeSubmissionProblem');
 			const parseProblem = (problem: string, index: number): Dependency => {
-                return new Dependency(problem, vscode.TreeItemCollapsibleState.Collapsed, 'submission_problem_' + labJson['roles'][order], order, labJson['roles'][order]); // problem들 가져오기
+                return new Dependency(problem, vscode.TreeItemCollapsibleState.Collapsed, 'submission_problem_' + labJson['roles'][order], order, labJson['roles'][order], labName); // problem들 가져오기
             };
 
             let problems:string[] = [];
@@ -131,37 +131,37 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     }
 
     // 기능 추가
-    private makeFunction(order: number | undefined, role: string | undefined)
+    private makeFunction(order: number | undefined, role: string | undefined, labName: string | undefined)
     {
         let res: Dependency[] = [];
         if(role === 'admin'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role));
-            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role));
-            res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submissions', order, role));
-            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
-            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role, labName));
+            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role, labName));
+            res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submissions', order, role, labName));
+            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role, labName));
+            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role, labName));
+            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role, labName));
         }
         else if(role === 'student'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role));
-            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role));
-            // res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role));
-            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role));
-            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role, labName));
+            res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role, labName));
+            // res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role, labName));
+            res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role, labName));
+            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role, labName));
+            res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role, labName));
         }
 
         return res;
     }
 
     // 멤버 추가
-    private makeMember(labJsonPath: string, order: number | any, role: string | any){
+    private makeMember(labJsonPath: string, order: number | any, role: string | any, labName: string | any){
         if (this.pathExists(labJsonPath)) {
 			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
             console.log('makeMember');
             
 			const parseMember = (member: string, index: number): Dependency => {
-				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'member_' + role, order, role, labJson['labs'][order]['members'][index]['role']); // problem들 가져오기
+				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'member_' + role, order, role, labName, labJson['labs'][order]['members'][index]['role']); // problem들 가져오기
 			};
 
             let members:string[] = [];
@@ -177,7 +177,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     }
 
     // 학생들 submission된거 확인
-    private async makeSubmission(labJsonPath: string, order: number | any, role: string | any, label: string | any){
+    private async makeSubmission(labJsonPath: string, order: number | any, role: string | any, label: string | any, labName: string | any){
         if (this.pathExists(labJsonPath)) {
 			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
             console.log('makeSubmission');
@@ -193,7 +193,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             let submissionOrder: number | any = await sync();
 
 			const parseMember = (member: string, index: number): Dependency => {
-				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'submission_member_' + role, order, role, labJson['labs'][order]['problems'][submissionOrder]['submission'][index]['evaluation']); // problem들 가져오기
+				return new Dependency(member, vscode.TreeItemCollapsibleState.None, 'submission_member_' + role, order, role, labName, labJson['labs'][order]['problems'][submissionOrder]['submission'][index]['evaluation']); // problem들 가져오기
 			};
 
             let members:string[] = [];
@@ -216,14 +216,16 @@ export class Dependency extends vscode.TreeItem {
         public readonly contextValue?: string, // label과 비슷한 기능으로 하위 트리 만들 떄 사용
         public readonly order?: number, // labs 순서를 알 수 있도록
         public readonly role?: string, // 권한
+        public readonly labName?: string, // 랩 이름
         public readonly description?: string,
-        public readonly command?: vscode.Command
+        // public readonly command?: vscode.Command
 	) {
 		super(label, collapsibleState);
 		this.contextValue = contextValue;
         this.description = description;
         this.order = order;
         this.role = role;
-        this.command = command;
+        this.labName = labName;
+        // this.command = command;
 	}
 }

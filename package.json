@@ -25,9 +25,11 @@
 		"oncommand:codelabhub.stopLog",
 		"oncommand:codelabhub.monitoringLog",
 		"oncommand:codelabhub.initializeLog",
-
+		"onCommand:codelabhub.login",
+		"onCommand:codelabhub.logout",
 		"onView:labView",
-		"onView:CodeLabHub-Login"
+		"onView:login",
+		"onView:logout"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -121,6 +123,16 @@
 				"title": "Initialize Monitoring",
 				"category": "CodeLabHub",
 				"icon": "$(refresh)"
+			},
+			{
+				"command": "codelabhub.login",
+				"title": "Login",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.logout",
+				"title": "Logout",
+				"category": "CodeLabHub"
 			}
 		],
 		"viewsContainers": {
@@ -139,8 +151,14 @@
 					"name": "Lab"
 				},
 				{
-					"id": "CodeLabHub-Login",
-					"name": "Login"
+					"id": "login",
+					"name": "Login",
+					"when": "!extensionSelectionMode"
+				},
+				{
+					"id": "logout",
+					"name": "Logout",
+					"when": "extensionSelectionMode"
 				}
 			]
 		},
@@ -225,7 +243,19 @@
 				}
 			]
 		},
-		"configuration" :[
+		"viewsWelcome": [
+			{
+				"view": "login",
+				"contents": "You are not currently logged in to an account\n[Login](command:codelabhub.login)",
+				"when": "!extensionSelectionMode"
+			},
+			{
+				"view": "logout",
+				"contents": "You are currently logged in to an account\n[Logout](command:codelabhub.logout)",
+				"when": "extensionSelectionMode"
+			}
+		],
+		"configuration": [
 			{
 				"title": "CodeLabHub",
 				"properties": {
@@ -250,19 +280,24 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.67.0",
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "14.x",
+		"@types/vscode": "^1.67.0",
 		"@typescript-eslint/eslint-plugin": "^5.21.0",
 		"@typescript-eslint/parser": "^5.21.0",
+		"@vscode/test-electron": "^2.1.3",
 		"eslint": "^8.14.0",
 		"glob": "^8.0.1",
 		"mocha": "^9.2.2",
-		"typescript": "^4.6.4",
 		"ts-loader": "^9.2.8",
+		"typescript": "^4.6.4",
 		"webpack": "^5.70.0",
-		"webpack-cli": "^4.9.2",
-		"@vscode/test-electron": "^2.1.3"
+		"webpack-cli": "^4.9.2"
+	},
+	"dependencies": {
+		"axios": "^0.27.2",
+		"got": "^12.0.4",
+		"url-join": "^5.0.0"
 	}
 }
