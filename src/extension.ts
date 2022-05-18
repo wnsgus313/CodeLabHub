@@ -33,11 +33,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// treeView refresh, labs.json 가져오기
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', async () => {
 		console.log('command : refreshLab');
+		labProvider.refresh();
+		labProvider.refresh();
 		if(rootPath){
 			console.log(path.join(rootPath, 'labs.json'));
 			await fetchInfo(urlJoin(rootUrl, infoUrl), path.join(rootPath, 'labs.json'), info);
 		}
-
+		labProvider.refresh();
 		labProvider.refresh();
 	}));
 
@@ -149,12 +151,12 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	// admin, student가 Code 제출 && 채점
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', async (item) => {
 		console.log('command : submitCode');
 		if(rootPath){
-			submitCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
+			await submitCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 	
 	// admin, student 전체 채팅
@@ -162,19 +164,19 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log('command : labChat');
 		chatOpenPanel(urlJoin(rootUrl, item.labName, 'chat'), info);
 
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// student 모니터링 log 시작
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.sendLog', () => {
 		console.log('command : sendLog');
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// student 모니터링 log 중지
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.stopLog', () => {
 		console.log('command : stopLog');
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 
