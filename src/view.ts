@@ -1,97 +1,100 @@
-export function getChatWebviewContent(token: string, url: string)
+export function getChatWebviewContent(url: any, token: any)
 {
-    return `<!DOCTYPE html>
-    <html>
-       <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>vsChat</title>
-          <style>
-             body,
-             html, #app {
-             width: 100%;
-             height: 100%;
-             overflow: hidden;
-             }
-             * {
-             padding: 0;
-             margin: 0;
-             }
-             iframe {
-             width: 100%;
-             height: 100%;
-             overflow: hidden;
-             border: none;
-             }
-          </style>
-       </head>
-       <body onload="loading()">
-          <div id="app" style="display:none;">
-             <div id="snow"></div>
-             <iframe allowtransparency="true" src="${url}?token=${token}"
-                frameborder="0"></iframe>
-          </div>
-          <script>
-             // Loading screen
-                
-             function loading() {
-                
-             }
-             function showPage() {
-             
-             }
-             document.head.append(script);
-          </script>
-       </body>
-    </html>`;
-}
-
-export function getLogWebviewContent(url: string, username: unknown)
-{
-    return `
-    <!DOCTYPE html>
+  return `
+  <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>vsChat</title>
-        <style>
-            body,
-            html, #app {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            }
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>vsChat</title>
+      <style>
+         body,
+         html, #app {
+         width: 100%;
+         height: 100%;
+         overflow: hidden;
+         }
          * {
-            padding: 0;
-            margin: 0;
-            }
-            iframe {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            border: none;
-            }
-        </style>
-    </head>
-    <body onload="loading()">
-        <div id="app" style="display:none;">
+         padding: 0;
+         margin: 0;
+         }
+         iframe {
+         width: 100%;
+         height: 100%;
+         overflow: hidden;
+         border: none;
+         }
+      </style>
+   </head>
+   <body onload="loading()">
+      <div id="app" style="display:none;">
         <div id="snow"></div>
-        <iframe allowtransparency="true" src="${url}/${username}"
-            frameborder="0"></iframe>
-        </div>
-        <script>
+        <iframe allowtransparency="true" src="${url}?token=${token}"
+          frameborder="0"></iframe>
+      </div>
+      <script>
          // Loading screen
-            var loadingScreen;
+         var loadingScreen;
         function loading() {
-            loadingScreen = setTimeout(showPage, 1000);
+          loadingScreen = setTimeout(showPage, 1000);
         }
         function showPage() {
-            document.getElementById("app").style.display = "block";  
+          document.getElementById("app").style.display = "block";  
         }
         document.head.append(script);
-        </script>
-    </body>
+
+      </script>
+   </body>
+</html>
+	`;
+}
+
+export function getLogWebviewContent(url: string, token: any)
+{
+  return `
+  <!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>vsChat</title>
+      <style>
+         body,
+         html, #app {
+         width: 100%;
+         height: 100%;
+         overflow: hidden;
+         }
+         * {
+         padding: 0;
+         margin: 0;
+         }
+         iframe {
+         width: 100%;
+         height: 100%;
+         overflow: hidden;
+         border: none;
+         }
+      </style>
+   </head>
+   <body onload="loading()">
+      <div id="app" style="display:none;">
+        <div id="snow"></div>
+        <iframe allowtransparency="true" src="${url}?token=${token}"
+          frameborder="0"></iframe>
+      </div>
+      <script>
+         // Loading screen
+         var loadingScreen;
+        function loading() {
+          loadingScreen = setTimeout(showPage, 1000);
+        }
+        function showPage() {
+          document.getElementById("app").style.display = "block";  
+        }
+        document.head.append(script);
+      </script>
+   </body>
 </html>
 	`;
 }

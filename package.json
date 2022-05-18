@@ -17,6 +17,7 @@
 		"onCommand:codelabhub.makeLab",
 		"onCommand:codelabhub.deleteLab",
 		"onCommand:codelabhub.submitCode",
+		"onCommand:codelabhub.saveStudentCode",
 		"onCommand:codelabhub.inviteMember",
 		"onCommand:codelabhub.deleteMember",
 		"onCommand:codelabhub.inviteTA",
@@ -133,6 +134,12 @@
 				"command": "codelabhub.logout",
 				"title": "Logout",
 				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.saveStudentCode",
+				"title": "Save student code",
+				"category": "CodeLabHub",
+				"icon": "$(cloud-download)"
 			}
 		],
 		"viewsContainers": {
@@ -202,6 +209,11 @@
 					"group": "inline@0"
 				},
 				{
+					"command": "codelabhub.saveStudentCode",
+					"when": "view == labView && viewItem == submission_problem_admin",
+					"group": "inline@1"
+				},
+				{
 					"command": "codelabhub.inviteMember",
 					"when": "view == labView && viewItem == members_admin",
 					"group": "inline@1"
@@ -262,7 +274,7 @@
 					"codelabhub.root-url": {
 						"description": "Server root url",
 						"type": "string",
-						"default": "http://203.245.41.143:5000/"
+						"default": "http://203.245.41.143:8111/"
 					}
 				}
 			}

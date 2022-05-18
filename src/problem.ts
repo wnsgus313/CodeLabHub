@@ -2,14 +2,30 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from "path";
 import got from 'got';
+import urlJoin from 'url-join';
 
 import FormData = require('form-data');
 let axios = require('axios');
 
-export async function uploadProblem(url:string, title:string, targetPath:string, info:vscode.Memento) {
+
+export function getProblemName()
+{
+    return vscode.window.showInputBox({
+		prompt: 'Problem Name',
+        ignoreFocusOut: true
+	});
+}
+
+export async function uploadProblem(url:string, targetPath:string, info:vscode.Memento, problemName:string) {
 	const token = await info.get('token');
 
-	let fileLists:string[] = fs.readdirSync(targetPath);
+	let fileLists:string[];
+	try{
+		fileLists = fs.readdirSync(targetPath);
+	} catch(e) {
+		vscode.window.showErrorMessage(`Check ${problemName} in your workspace!`);
+		return;
+	};
 
 	let filedata:string[] = [];
 	let filename:string[] = [];
@@ -25,21 +41,19 @@ export async function uploadProblem(url:string, title:string, targetPath:string,
 		'filename': filename,
 		'file': filedata
 	};
-
 	axios.post(url, {files}, {auth: {username:token}})
-	.then((res:any) => {
-		vscode.window.showInformationMessage(`Problem upload successfully.`);
+	.then(async (res:any) => {
+		await uploadPdf(url, targetPath, info, problemName);
 	}).catch((err:any) => {
-		vscode.window.showErrorMessage(`Problem upload failed`);
+		vscode.window.showErrorMessage(`${problemName} upload failed`);
 	});
-
 }
 
-export async function uploadPdf(url:string, title:string, targetPath:string, info:vscode.Memento)
+async function uploadPdf(url:string, targetPath:string, info:vscode.Memento, problemName: string)
 {
 	const formData = new FormData();
     const token = await info.get('token');
-    
+	console.log(urlJoin(url, 'pdf'));
     let fileLists:string[] = fs.readdirSync(targetPath);
 
     fileLists.forEach((file) => {
@@ -52,23 +66,38 @@ export async function uploadPdf(url:string, title:string, targetPath:string, inf
     const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
     try {
-        let res = await got.post(url + '/pdf', {
+        let res = await got.post(urlJoin(url, 'pdf'), {
             body: formData,
             headers: {
                 "Authorization": auth
             }
         });
-    
-        vscode.window.showInformationMessage('Success upload pdf');
+        vscode.window.showInformationMessage(`${problemName} upload successfully`);
     } catch (e) {
-        vscode.window.showErrorMessage(`Pdf upload failed`);
+        vscode.window.showErrorMessage(`${problemName} upload failed`);
     }
 }
 
-export async function fetchAndSaveProblem(url:string, title:string, targetPath:string, info:vscode.Memento) {
-	console.log(targetPath);
-	console.log (url);
+export async function deleteProblem(url:string, title:string, info:vscode.Memento) {
+	const token = await info.get('token');
 
+	vscode.window.showInformationMessage(`Do you want to delete ${title} ?`, "Yes", "No")
+	.then(answer => {
+		if (answer === "Yes") {
+			axios.delete(url, {auth: {username:token}})
+			.then((res:any) => {
+				vscode.window.showInformationMessage(`${title} delete successfully.`);
+			}).catch((err:any) => {
+				vscode.window.showErrorMessage(`Fail delete problem ${title}`);
+			});
+		}
+		else {
+			vscode.window.showInformationMessage("Exit");
+		}
+	});
+}
+
+export async function fetchProblem(url:string, title:string, targetPath:string, info:vscode.Memento) {
 	const token = await info.get('token');
 
 	const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
@@ -84,10 +113,10 @@ export async function fetchAndSaveProblem(url:string, title:string, targetPath:s
 		}
 		
 		res.data['file_list'].forEach((filename:string) => {
-			const saveFilePath = targetPath + '/' + filename;
+			const saveFilePath = path.join(targetPath, filename);
 			let reg = /(.*?)\.(pdf)$/;
 			if (!filename.match(reg)){
-				axios.get(url + '/' + filename, {auth: {username:token}})
+				axios.get(urlJoin(url, filename), {auth: {username:token}})
 				.then((res:any) => {
 					fs.writeFileSync(saveFilePath, res.data);
 				})
@@ -96,7 +125,7 @@ export async function fetchAndSaveProblem(url:string, title:string, targetPath:s
 				});
 			}
 			else {
-				downloadImage(url + '/' + filename + '.pdf', saveFilePath, auth);
+				downloadImage(urlJoin(url, filename + '.pdf'), saveFilePath, auth);
 			}
 		});
 
@@ -105,16 +134,6 @@ export async function fetchAndSaveProblem(url:string, title:string, targetPath:s
 	});
 }
 
-export async function deleteProblem(url:string, title:string, info:vscode.Memento) {
-	const token = await info.get('token');
-
-	axios.delete(url, {auth: {username:token}})
-	.then((res:any) => {
-		vscode.window.showInformationMessage(`${title} delete successfully.`);
-	}).catch((err:any) => {
-		vscode.window.showErrorMessage(`Please check Problem Id : ${title}`);
-	});
-}
 
 export async function fetchProblemList(url: string | undefined, targetPath: string, info: any) {
 	const token = await info.get('token');
@@ -129,60 +148,10 @@ export async function fetchProblemList(url: string | undefined, targetPath: stri
 	});
 }
 
-export async function fetchAndSaveCode(url: string, title: string, targetPath: string, info: vscode.Memento) {
-	const token = await info.get('token');
 
-	let studentsId: string[] = [];
-
-	let studentsEmail: string[] = [];
-	
-	axios.get(url, {auth: {username:token}})
-	.then((res:any) => {
-		if(!fs.existsSync(targetPath)){
-			fs.mkdirSync(targetPath);
-		}
-		res.data['dir_list'].forEach(async (dirname:string) => {
-			studentsId.push(dirname);
-		});
-
-		res.data['email_list'].forEach(async (email:string) => {
-			studentsEmail.push(email);
-		});
-	})
-	.then(() => {
-		for (const student of studentsId) {
-			axios.get(url + '/' + student, {auth: {username:token}})
-			.then((res:any) => {
-				for(const email of studentsEmail) {
-					if(!fs.existsSync(targetPath + '/' + email)){
-						fs.mkdirSync(targetPath + '/' + email);
-					}
-					res.data['file_list'].forEach((filename:string) => {
-						const saveFilePath = targetPath + '/' + email + '/' + filename;
-						axios.get(url + '/' + student + '/' + filename, {auth: {username:token}})
-						.then((res:any) => {
-							fs.writeFileSync(saveFilePath, res.data);
-							vscode.window.showInformationMessage(`${filename} save successfully.`);
-						})
-						.catch((err:any) => {
-							vscode.window.showErrorMessage(`Fail save ${filename} in Problem ${title}/${email}`);
-						});
-					});
-				}
-			}).catch((err:any) => {
-				vscode.window.showErrorMessage(`Please check Problem Id : --2--${title}`);
-			});
-		}
-	})
-	.catch((err:any) => {
-		vscode.window.showErrorMessage(`Please check Problem Id : --- ${title} ---`);
-	});
-}
-
-
-async function downloadImage(url: any, saveFilePath:any, token: any) {
-	const path2 = path.resolve(saveFilePath);
-	const writer = fs.createWriteStream(path2);
+async function downloadImage(url: any, filePath:any, token: any) {
+	const saveFilePath = path.resolve(filePath);
+	const writer = fs.createWriteStream(saveFilePath);
 
 	const response = await axios({
 		url,
@@ -198,57 +167,5 @@ async function downloadImage(url: any, saveFilePath:any, token: any) {
 	return new Promise((resolve, reject) => {
 		writer.on('finish', resolve);
 		writer.on('error', reject);
-	});
-}
-
-export async function downloadVideo(url: string, title: string, targetPath: string, info: vscode.Memento) {
-	const token = await info.get('token');
-
-	const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
-
-	let studentsId: string[] = [];
-
-	let studentsEmail: string[] = [];
-	
-	axios.get(url, {auth: {username:token}})
-	.then((res:any) => {
-		if(!fs.existsSync(targetPath)){
-			fs.mkdirSync(targetPath);
-		}
-		res.data['dir_list'].forEach(async (dirname:string) => {
-			studentsId.push(dirname);
-		});
-
-		res.data['email_list'].forEach(async (email:string) => {
-			studentsEmail.push(email);
-		});
-	})
-	.then(() => {
-		for (const student of studentsId) {
-			axios.get(url + '/' + student, {auth: {username:token}})
-			.then((res:any) => {
-				for(const email of studentsEmail) {
-					if(!fs.existsSync(targetPath + '/video')){
-						fs.mkdirSync(targetPath + '/video');
-					}
-					res.data['file_list'].forEach((filename:string) => {
-						const saveFilePath = targetPath + '/video/' + filename;
-						axios.get(url + '/' + student + '/' + filename, {auth: {username:token}})
-						.then((res:any) => {
-							downloadImage(url + '/' + student + '/' + filename, saveFilePath, auth);
-							vscode.window.showInformationMessage(`${filename} save successfully.`);
-						})
-						.catch((err:any) => {
-							vscode.window.showErrorMessage(`Fail save ${filename} in Problem ${title}/${email}`);
-						});
-					});
-				}
-			}).catch((err:any) => {
-				vscode.window.showErrorMessage(`Please check Problem Id : --543--${title}`);
-			});
-		}
-	})
-	.catch((err:any) => {
-		vscode.window.showErrorMessage(`Please check Problem Id : 555--- ${title} ---`);
 	});
 }

@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import { getChatWebviewContent } from "./view";
+import { getLogWebviewContent } from "./view";
 
 // Create and show panel
-export function chatOpenPanel(url:string, info:any) {
+export function monitoringOpenPanel(url:string, info:any) {
     const panel = vscode.window.createWebviewPanel(
-        'chatroom',
-        'Chat Room',
+        'monitoring',
+		'Monitoring',
         vscode.ViewColumn.One,
         {
             enableScripts: true,
@@ -18,5 +18,5 @@ export function chatOpenPanel(url:string, info:any) {
     const token = info.get('token');
 
     // And set its HTML content
-    panel.webview.html = getChatWebviewContent(url, token);    
+    panel.webview.html = getLogWebviewContent(url, token);    
 }

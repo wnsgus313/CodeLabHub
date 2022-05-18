@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
 import urlJoin from 'url-join';
 
-export function askUserForEmail() {
+function askUserForEmail() {
 	return vscode.window.showInputBox({
 		prompt: 'input your email',
         ignoreFocusOut: true
 	});
 }
 
-export function askUserForPassword() {
+function askUserForPassword() {
 	return vscode.window.showInputBox({
 		prompt: 'input your password',
         ignoreFocusOut: true,
@@ -16,7 +16,7 @@ export function askUserForPassword() {
 	});
 }
 
-export async function askUserForSave(info: vscode.Memento, url: string) {
+export async function login(info: vscode.Memento, url: string) {
 	let email = await askUserForEmail();
 	let password = await askUserForPassword();
 
@@ -26,7 +26,7 @@ export async function askUserForSave(info: vscode.Memento, url: string) {
 	saveToken(info, url);
 }
 
-export async function saveToken(info: vscode.Memento, url: string) {
+async function saveToken(info: vscode.Memento, url: string) {
 	const axios = require('axios');
 
 	const email = await info.get('email');
@@ -55,7 +55,7 @@ export async function logout(info: vscode.Memento) {
     changestatusFalse(info);
 }
 
-export async function changestatusTrue(info: vscode.Memento) {
+async function changestatusTrue(info: vscode.Memento) {
     const token = await info.get('token');
     const expiration: number | any = await info.get('expiration');
 
@@ -70,7 +70,7 @@ export async function changestatusTrue(info: vscode.Memento) {
 	}
 }
 
-export function changestatusFalse(info: vscode.Memento) {
+function changestatusFalse(info: vscode.Memento) {
     info.update('token', undefined);
 	vscode.commands.executeCommand('setContext', 'extensionSelectionMode', false);
 }
