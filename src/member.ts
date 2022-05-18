@@ -37,6 +37,22 @@ export async function inviteTA(url: string, labName: string, info: vscode.Mement
     });
 }
 
+export async function deleteMember(url: string, labName:string, userName:string, info: vscode.Memento){
+    let token = info.get('token');
+
+    let sendInfo = {
+        'username': userName,
+        'lab': labName
+    };
+
+    axios.post(url, sendInfo, {auth: {username:token}})
+    .then((res:any) => {
+        vscode.window.showInformationMessage(`Success to delete ${userName} to ${labName}`);
+    }).catch((err:any) => {
+        vscode.window.showErrorMessage(`Fail to delete ${userName} to ${labName}`);
+    });
+}
+
 function getEmail(prompt: string) {
 	return vscode.window.showInputBox({
 		prompt: prompt,

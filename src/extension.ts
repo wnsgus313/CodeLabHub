@@ -9,7 +9,7 @@ import { monitoringOpenPanel } from './monitoring';
 import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
 import { makeLab, deleteLab, fetchInfo } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
-import { inviteMember, inviteTA } from './member';
+import { inviteMember, inviteTA, deleteMember } from './member';
 
 export function activate(context: vscode.ExtensionContext) {
 	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -22,20 +22,20 @@ export function activate(context: vscode.ExtensionContext) {
 	const codesUrl = 'api/v1/student_codes/';
 	const inviteUrl = 'api/v1/invite';
 	const inviteTAUrl = 'api/v1/inviteTA';
-	const contentUrl = 'problems/';
 	const infoUrl = 'api/v1/info';
+	const deleteMemberUrl = 'api/v1/deleteStudentFromLab';
 	const videoUrl = 'api/v1/video/';
 	
 	const labProvider = new LabProvider(rootPath, info);
 	vscode.window.registerTreeDataProvider('labView', labProvider); // treeData 등록
-	
+	vscode.commands.executeCommand('codelabhub.refreshLab');
+
 	// treeView refresh, labs.json 가져오기
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', async (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', async () => {
 		console.log('command : refreshLab');
-		
 		if(rootPath){
-			console.log(urlJoin(rootUrl, infoUrl));
-			fetchInfo(urlJoin(rootUrl, infoUrl), path.join(rootPath, item.labName, 'labs.json'), info);
+			console.log(path.join(rootPath, 'labs.json'));
+			await fetchInfo(urlJoin(rootUrl, infoUrl), path.join(rootPath, 'labs.json'), info);
 		}
 
 		labProvider.refresh();
@@ -43,108 +43,107 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	// login
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.login', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.login', async () => {
 		console.log('command : login');
-		login(info, rootUrl);
-
-		labProvider.refresh();
+		await login(info, rootUrl);
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// logout
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.logout', () => {
 		console.log('command : logout');
 		logout(info);
-
-		labProvider.refresh();
 	}));
 
 
 
 	// admin이 문제 업로드
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.uploadProblem', async(item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.uploadProblem', async (item) => {
 		console.log('command : uploadProblem');
 		const problemName = await getProblemName();
 		if(rootPath && problemName){
-			uploadProblem(urlJoin(rootUrl, problemsUrl, item.labName, problemName), path.join(rootPath, item.labName, problemName), info, problemName);
+			await uploadProblem(urlJoin(rootUrl, problemsUrl, item.labName, problemName), path.join(rootPath, item.labName, problemName), info, problemName);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 문제 삭제
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteProblem', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteProblem', async (item) => {
 		console.log('command : deleteProblem');
 		if(rootPath){
-			deleteProblem(urlJoin(rootUrl, problemsUrl, item.labName, item.label), item.label, info);
+			await deleteProblem(urlJoin(rootUrl, problemsUrl, item.labName, item.label), item.label, info);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin, student 문제, 코드들 가져오기
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.fetchProblem', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.fetchProblem', async (item) => {
 		console.log('command : fetchProblem');
 		if(rootPath){
-			fetchProblem(urlJoin(rootUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
+			await fetchProblem(urlJoin(rootUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// 학생 코드 다 가져오기
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.saveStudentCode', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.saveStudentCode', async (item) => {
 		console.log('command : saveStudentCode');
 		if(rootPath){
-			saveAllStudentCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label + '_code'), info);
+			await saveAllStudentCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label + '_code'), info);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 Lab 만들기
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.makeLab', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.makeLab', async () => {
 		console.log('command : makeLab');
 		if(rootPath){
-			makeLab(urlJoin(rootUrl, labUrl), rootPath, info);
+			await makeLab(urlJoin(rootUrl, labUrl), rootPath, info);
 		}
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 lab 삭제
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteLab', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteLab', async (item) => {
 		console.log('command : deleteLab');
-		deleteLab(urlJoin(rootUrl, labUrl, 'delete'), info, item.label);
-		labProvider.refresh();
+		await deleteLab(urlJoin(rootUrl, labUrl, 'delete'), info, item.label);
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 멤버 초대
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.inviteMember', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.inviteMember', async (item) => {
 		console.log('command : inviteMember');
 		
-		inviteMember(urlJoin(rootUrl, inviteUrl), item.labName, info);
-		labProvider.refresh();
+		await inviteMember(urlJoin(rootUrl, inviteUrl), item.labName, info);
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 멤버 삭제
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteMember', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.deleteMember', async (item) => {
 		console.log('command : deleteMember');
-		labProvider.refresh();
+
+		await deleteMember(urlJoin(rootUrl, deleteMemberUrl), item.labName, item.label, info);
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 TA초대
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.inviteTA', (item) => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.inviteTA', async (item) => {
 		console.log('command : inviteTA');
 
-		inviteTA(urlJoin(rootUrl, inviteTAUrl), item.labName, info);
-		labProvider.refresh();
+		await inviteTA(urlJoin(rootUrl, inviteTAUrl), item.labName, info);
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin 모니터링
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.monitoringLog', (item) => {
 		console.log('command : monitoringLog');
 		monitoringOpenPanel(urlJoin(rootUrl, item.labName, 'practice'), info);
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 	// admin 모니터링 초기화
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.initializeLog', () => {
 		console.log('command : initializeLog');
-		labProvider.refresh();
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	
