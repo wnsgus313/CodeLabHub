@@ -8,7 +8,7 @@ import { chatOpenPanel } from './chat';
 import { monitoringOpenPanel } from './monitoring';
 import { fetchProblemList, uploadProblem, deleteProblem, getProblemName } from './problem';
 import { makeLab, deleteLab } from './lab';
-import { saveAllStudentCode } from './code';
+import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA } from './member';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -145,8 +145,11 @@ export function activate(context: vscode.ExtensionContext) {
 	
 
 	// admin, student가 Code 제출 && 채점
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.submitCode', (item) => {
 		console.log('command : submitCode');
+		if(rootPath){
+			submitCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
+		}
 		labProvider.refresh();
 	}));
 	

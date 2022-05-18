@@ -5,6 +5,39 @@ import * as path from 'path';
 
 let axios = require('axios');
 
+export async function submitCode(url:string, title:string, targetPath:string, info:vscode.Memento){
+	const token = await info.get('token');
+
+	let fileLists:string[] = fs.readdirSync(targetPath);
+
+	let filedata:string[] = [];
+	let filename:string[] = [];
+	fileLists.forEach((file) => {
+		filedata.push(fs.readFileSync(path.join(targetPath, file), "utf-8"));
+		filename.push(file);
+	});
+
+	let files = {
+		'filename': filename,
+		'file': filedata,
+	};
+
+	await axios.delete(url, {auth: {username:token}})
+	.then((res:any) =>{
+
+	}).catch((err:any) => {
+		
+	});
+
+	axios.post(url, {files}, {auth: {username:token}})
+	.then((res:any) => {
+		vscode.window.showInformationMessage(res.data['message']);
+	}).catch((err:any) => {
+		vscode.window.showErrorMessage(`Code submit failed`);
+	});
+}
+
+
 export async function saveAllStudentCode(url: string, title: string, targetPath: string, info: vscode.Memento){
     let studentsId: string[] = [];
 	let studentsEmail: string[] = [];
