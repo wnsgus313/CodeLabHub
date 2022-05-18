@@ -135,20 +135,6 @@ export async function fetchProblem(url:string, title:string, targetPath:string, 
 }
 
 
-export async function fetchProblemList(url: string | undefined, targetPath: string, info: any) {
-	const token = await info.get('token');
-
-	axios.get(url, {auth: {username:token}})
-	.then((res:any) => {
-		console.log(JSON.stringify(res.data));
-		fs.writeFileSync(targetPath, JSON.stringify(res.data));
-
-	}).catch((err:any) => {
-		vscode.window.showErrorMessage(`fetch problem list failed!`);
-	});
-}
-
-
 async function downloadImage(url: any, filePath:any, token: any) {
 	const saveFilePath = path.resolve(filePath);
 	const writer = fs.createWriteStream(saveFilePath);

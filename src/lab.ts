@@ -55,3 +55,16 @@ export async function deleteLab(url: string, info: vscode.Memento, labName: stri
 			}
         });
 }
+
+export async function fetchInfo(url: string | undefined, targetPath: string, info: any) {
+	const token = await info.get('token');
+
+	axios.get(url, {auth: {username:token}})
+	.then((res:any) => {
+		console.log(JSON.stringify(res.data));
+		fs.writeFileSync(targetPath, JSON.stringify(res.data));
+
+	}).catch((err:any) => {
+		vscode.window.showErrorMessage(`Fetch info failed!`);
+	});
+}

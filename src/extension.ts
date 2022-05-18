@@ -6,8 +6,8 @@ import { LabProvider } from './treeView';
 import { login, logout } from './login';
 import { chatOpenPanel } from './chat';
 import { monitoringOpenPanel } from './monitoring';
-import { fetchProblemList, uploadProblem, deleteProblem, getProblemName } from './problem';
-import { makeLab, deleteLab } from './lab';
+import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
+import { makeLab, deleteLab, fetchInfo } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA } from './member';
 
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const inviteUrl = 'api/v1/invite';
 	const inviteTAUrl = 'api/v1/inviteTA';
 	const contentUrl = 'problems/';
-	const problemListUrl = 'api/v1/problems/list';
+	const infoUrl = 'api/v1/info';
 	const videoUrl = 'api/v1/video/';
 	
 	const labProvider = new LabProvider(rootPath, info);
@@ -32,8 +32,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// treeView refresh, labs.json 가져오기
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', async (item) => {
 		console.log('command : refreshLab');
+		
 		if(rootPath){
-			await fetchProblemList(urlJoin(rootUrl, 'api/v1/problems/list'), path.join(rootPath, item.labName, 'labs.json'), info);
+			console.log(urlJoin(rootUrl, infoUrl));
+			fetchInfo(urlJoin(rootUrl, infoUrl), path.join(rootPath, item.labName, 'labs.json'), info);
 		}
 
 		labProvider.refresh();
@@ -78,8 +80,11 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// admin, student 문제, 코드들 가져오기
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.fetchProblem', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.fetchProblem', (item) => {
 		console.log('command : fetchProblem');
+		if(rootPath){
+			fetchProblem(urlJoin(rootUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label), info);
+		}
 		labProvider.refresh();
 	}));
 
