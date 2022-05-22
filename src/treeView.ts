@@ -135,19 +135,19 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
     {
         let res: Dependency[] = [];
         if(role === 'admin'){
-            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_'+role, order, role, labName));
+            res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role, labName));
             res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role, labName));
             res.push(new Dependency("Submission", vscode.TreeItemCollapsibleState.Collapsed, 'submissions', order, role, labName));
+            res.push(new Dependency("Video", vscode.TreeItemCollapsibleState.Collapsed, "videos_" + role, order, role, labName));
             res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role, labName));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role, labName));
             res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role, labName));
         }
         else if(role === 'student'){
             res.push(new Dependency("Problem", vscode.TreeItemCollapsibleState.Collapsed, 'problems_' + role, order, role, labName));
             res.push(new Dependency("Member", vscode.TreeItemCollapsibleState.Collapsed, 'members_' + role, order, role, labName));
             // res.push(new Dependency("Evaluation", vscode.TreeItemCollapsibleState.Collapsed, 'evaluations', order, role, labName));
+            res.push(new Dependency("Video", vscode.TreeItemCollapsibleState.Collapsed, "videos_" + role, order, role, labName));
             res.push(new Dependency("Class chat", vscode.TreeItemCollapsibleState.None, 'chat', order, role, labName));
-            res.push(new Dependency("TA", vscode.TreeItemCollapsibleState.None, "ta", order, role, labName));
             res.push(new Dependency("Monitoring", vscode.TreeItemCollapsibleState.None, "monitoring_" + role, order, role, labName));
         }
 

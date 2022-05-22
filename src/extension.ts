@@ -5,7 +5,7 @@ import * as path from 'path';
 import { LabProvider } from './treeView';
 import { login, logout } from './login';
 import { chatOpenPanel } from './chat';
-import { monitoringOpenPanel } from './monitoring';
+import { monitoringOpenPanel, initializeLog, sendLog, stopLog } from './monitoring';
 import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
 import { makeLab, deleteLab, fetchInfo } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
@@ -24,11 +24,11 @@ export function activate(context: vscode.ExtensionContext) {
 	const inviteTAUrl = 'api/v1/inviteTA';
 	const infoUrl = 'api/v1/info';
 	const deleteMemberUrl = 'api/v1/deleteStudentFromLab';
+	const logUrl = 'api/v1/logs/DS';
 	const videoUrl = 'api/v1/video/';
 	
 	const labProvider = new LabProvider(rootPath, info);
 	vscode.window.registerTreeDataProvider('labView', labProvider); // treeData 등록
-	vscode.commands.executeCommand('codelabhub.refreshLab');
 
 	// treeView refresh, labs.json 가져오기
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.refreshLab', async () => {
@@ -36,7 +36,6 @@ export function activate(context: vscode.ExtensionContext) {
 		labProvider.refresh();
 		labProvider.refresh();
 		if(rootPath){
-			console.log(path.join(rootPath, 'labs.json'));
 			await fetchInfo(urlJoin(rootUrl, infoUrl), path.join(rootPath, 'labs.json'), info);
 		}
 		labProvider.refresh();
@@ -145,6 +144,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// admin 모니터링 초기화
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.initializeLog', () => {
 		console.log('command : initializeLog');
+		initializeLog(urlJoin(rootUrl, logUrl), info);
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
@@ -170,12 +170,18 @@ export function activate(context: vscode.ExtensionContext) {
 	// student 모니터링 log 시작
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.sendLog', () => {
 		console.log('command : sendLog');
+
+		sendLog(urlJoin(rootUrl, logUrl), info);
+
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// student 모니터링 log 중지
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.stopLog', () => {
 		console.log('command : stopLog');
+
+		stopLog(urlJoin(rootUrl, logUrl), info);
+
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
