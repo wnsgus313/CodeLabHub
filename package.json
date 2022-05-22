@@ -28,6 +28,7 @@
 		"oncommand:codelabhub.initializeLog",
 		"onCommand:codelabhub.login",
 		"onCommand:codelabhub.logout",
+		"onCommand:codelabhub.videoRecord",
 		"onView:labView",
 		"onView:login",
 		"onView:logout"
@@ -140,6 +141,12 @@
 				"title": "Save student code",
 				"category": "CodeLabHub",
 				"icon": "$(cloud-download)"
+			},
+			{
+				"command": "codelabhub.refreshLab",
+				"title": "Refresh",
+				"icon": "$(refresh)",
+				"category": "CodeLabHub"
 			}
 		],
 		"viewsContainers": {
