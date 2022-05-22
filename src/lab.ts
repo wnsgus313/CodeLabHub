@@ -68,3 +68,8 @@ export async function fetchInfo(url: string | undefined, targetPath: string, inf
 		vscode.window.showErrorMessage(`Fetch info failed!`);
 	});
 }
+
+export async function getVideoPath(){
+    let labName = await getLabName();
+    return labName;
+}

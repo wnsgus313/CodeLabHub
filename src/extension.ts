@@ -7,7 +7,7 @@ import { login, logout } from './login';
 import { chatOpenPanel } from './chat';
 import { monitoringOpenPanel, initializeLog, sendLog, stopLog } from './monitoring';
 import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
-import { makeLab, deleteLab, fetchInfo } from './lab';
+import { makeLab, deleteLab, fetchInfo, getVideoPath } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA, deleteMember } from './member';
 
@@ -185,6 +185,25 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
+	// 비디오 녹화 시작
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoRecord', () => {
+		const editJsonFile = require("edit-json-file");
+		const home = process.env.HOME || process.env.USERPROFILE;
+		const fileName = editJsonFile(`${home}/Library/Application\ Support/Code/User/settings.json`);
+		console.log('command : videoRecord');
+
+		getVideoPath()
+		.then(async (res: any)=> {
+
+			fileName.set("chronicler.dest-folder", rootPath + '/' + res);
+
+			fileName.save();
+
+			await vscode.commands.executeCommand('chronicler.recordWithAudio');
+
+		});
+
+	}));
 
 }
 
