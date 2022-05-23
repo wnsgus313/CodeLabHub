@@ -7,9 +7,10 @@ import { login, logout } from './login';
 import { chatOpenPanel } from './chat';
 import { monitoringOpenPanel, initializeLog, sendLog, stopLog } from './monitoring';
 import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
-import { makeLab, deleteLab, fetchInfo, getVideoPath } from './lab';
+import { makeLab, deleteLab, fetchInfo, getVideoPath, getUsername } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA, deleteMember } from './member';
+import { downloadVideo, uploadVideo, uploadVideoTA } from './video';
 
 export function activate(context: vscode.ExtensionContext) {
 	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -204,6 +205,42 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 	}));
+
+	//video 업로드
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadStudent', () => {
+		
+		getVideoPath()
+		.then(async (res: any)=> {
+
+			uploadVideo(urlJoin(rootUrl, videoUrl, res), rootPath + '/' + res, info);
+
+		});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadTA', () => {
+		
+		getVideoPath()
+		.then(async (res: any)=> {
+			getUsername()
+			.then(async (res2: any) => {
+				uploadVideoTA(urlJoin(rootUrl, videoUrl, res, res2), rootPath + '/' + res, info);
+			});
+		});
+	}));
+
+
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.downVideo', () => {
+		
+		getVideoPath()
+		.then(async (res: any)=> {
+			getUsername()
+			.then(async (res2: any) => {
+				downloadVideo(urlJoin(rootUrl, videoUrl, res, res2), rootPath + '/' + res + '/' + res2, info, res2);
+			});
+		});
+
+	}));
+	
 
 }
 

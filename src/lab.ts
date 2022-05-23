@@ -73,3 +73,8 @@ export async function getVideoPath(){
     let labName = await getLabName();
     return labName;
 }
+
+export async function getUsername(){
+    let labName = await getLabName();
+    return labName;
+}

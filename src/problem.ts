@@ -135,7 +135,7 @@ export async function fetchProblem(url:string, title:string, targetPath:string, 
 }
 
 
-async function downloadImage(url: any, filePath:any, token: any) {
+export async function downloadImage(url: any, filePath:any, token: any) {
 	const saveFilePath = path.resolve(filePath);
 	const writer = fs.createWriteStream(saveFilePath);
 

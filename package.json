@@ -29,6 +29,9 @@
 		"onCommand:codelabhub.login",
 		"onCommand:codelabhub.logout",
 		"onCommand:codelabhub.videoRecord",
+		"onCommand:codelabhub.videoUploadStudent",
+		"onCommand:codelabhub.videoUploadTA",
+		"onCommand:codelabhub.downVideo",
 		"onView:labView",
 		"onView:login",
 		"onView:logout"
@@ -146,6 +149,26 @@
 				"command": "codelabhub.refreshLab",
 				"title": "Refresh",
 				"icon": "$(refresh)",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.videoRecord",
+				"title": "Video Record",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.videoUploadStudent",
+				"title": "Student video upload",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.videoUploadTA",
+				"title": "TA video upload",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.downVideo",
+				"title": "Video download",
 				"category": "CodeLabHub"
 			}
 		],
@@ -316,6 +339,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.27.2",
+		"edit-json-file": "^1.7.0",
 		"got": "^12.0.4",
 		"url-join": "^5.0.0"
 	}
