@@ -75,7 +75,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             const roles = labJson['roles'];
 
 			const parseLab = (labName: string, index: number): Dependency => {
-				return new Dependency(labName, vscode.TreeItemCollapsibleState.Collapsed, "labs_" + roles[index], index, roles[index], labName);
+				return new Dependency(labName, vscode.TreeItemCollapsibleState.Collapsed, "labs_" + roles[index], index, roles[index], labName, roles[index]);
 			};
 
             let labs:string[] = [];

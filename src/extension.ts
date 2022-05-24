@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const inviteTAUrl = 'api/v1/inviteTA';
 	const infoUrl = 'api/v1/info';
 	const deleteMemberUrl = 'api/v1/deleteStudentFromLab';
-	const logUrl = 'api/v1/logs/DS';
+	const logUrl = 'api/v1/logs';
 	const videoUrl = 'api/v1/video/';
 
 	// chronicle 변수
@@ -147,9 +147,9 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 	// admin 모니터링 초기화
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.initializeLog', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.initializeLog', (item) => {
 		console.log('command : initializeLog');
-		initializeLog(urlJoin(rootUrl, logUrl), info);
+		initializeLog(urlJoin(rootUrl, logUrl, item.labName), info);
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
@@ -171,17 +171,17 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	// student 모니터링 log 시작
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.sendLog', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.sendLog', (item) => {
 		console.log('command : sendLog');
 
-		sendLog(urlJoin(rootUrl, logUrl), info);
+		sendLog(urlJoin(rootUrl, logUrl, item.labName), info);
 	}));
 
 	// student 모니터링 log 중지
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.stopLog', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.stopLog', (item) => {
 		console.log('command : stopLog');
 
-		stopLog(urlJoin(rootUrl, logUrl), info);
+		stopLog(urlJoin(rootUrl, logUrl, item.labName), info);
 	}));
 
 

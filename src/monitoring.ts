@@ -99,7 +99,7 @@ export async function startTraining(url: string, send: any, info: vscode.Memento
 			vscode.window.showErrorMessage(`Please open your editor!`);
 		}).finally(() => {
             minuteOne = '0';
-	        oneMinute = 0;
+            oneMinute = 0;
         });
 	}		
 }
