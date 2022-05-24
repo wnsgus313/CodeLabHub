@@ -29,9 +29,11 @@
 		"onCommand:codelabhub.login",
 		"onCommand:codelabhub.logout",
 		"onCommand:codelabhub.videoRecord",
+		"onCommand:codelabhub.videoRecordStop",
 		"onCommand:codelabhub.videoUploadStudent",
 		"onCommand:codelabhub.videoUploadTA",
-		"onCommand:codelabhub.downVideo",
+		"onCommand:codelabhub.downloadVideo",
+		"onCommand:codelabhub.videoDelete",
 		"onView:labView",
 		"onView:login",
 		"onView:logout"
@@ -121,7 +123,7 @@
 				"command": "codelabhub.monitoringLog",
 				"title": "View Monitoring",
 				"category": "CodeLabHub",
-				"icon": "$(remote-explorer)"
+				"icon": "$(feedback)"
 			},
 			{
 				"command": "codelabhub.initializeLog",
@@ -154,21 +156,37 @@
 			{
 				"command": "codelabhub.videoRecord",
 				"title": "Video Record",
+				"icon": "$(diff-modified)",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.videoRecordStop",
+				"title": "Video Record stop",
+				"icon": "$(stop-circle)",
 				"category": "CodeLabHub"
 			},
 			{
 				"command": "codelabhub.videoUploadStudent",
 				"title": "Student video upload",
+				"icon": "$(cloud-upload)",
 				"category": "CodeLabHub"
 			},
 			{
 				"command": "codelabhub.videoUploadTA",
-				"title": "TA video upload",
+				"title": "Admin video upload",
+				"icon": "$(cloud-upload)",
 				"category": "CodeLabHub"
 			},
 			{
-				"command": "codelabhub.downVideo",
+				"command": "codelabhub.downloadVideo",
 				"title": "Video download",
+				"icon": "$(cloud-download)",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.videoDelete",
+				"title": "Video delete",
+				"icon": "$(trash)",
 				"category": "CodeLabHub"
 			}
 		],
@@ -282,6 +300,36 @@
 					"command": "codelabhub.initializeLog",
 					"when": "view == labView && viewItem == monitoring_admin",
 					"group": "inline@2"
+				},
+				{
+					"command": "codelabhub.videoRecord",
+					"when": "view == labView && viewItem == videos_admin || viewItem == videos_student",
+					"group": "inline@0"
+				},
+				{
+					"command": "codelabhub.videoRecordStop",
+					"when": "view == labView && viewItem == videos_admin || viewItem == videos_student",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.videoUploadStudent",
+					"when": "view == labView && viewItem == videos_student",
+					"group": "inline@2"
+				},
+				{
+					"command": "codelabhub.videoUploadTA",
+					"when": "view == labView && viewItem == video_admin",
+					"group": "inline@1"
+				},
+				{
+					"command": "codelabhub.downloadVideo",
+					"when": "view == labView && viewItem == video_admin || viewItem == video_student",
+					"group": "inline@2"
+				},
+				{
+					"command": "codelabhub.videoDelete",
+					"when": "view == labView && viewItem == video_admin || viewItem == video_student",
+					"group": "inline@3"
 				}
 			]
 		},
@@ -304,7 +352,7 @@
 					"codelabhub.root-url": {
 						"description": "Server root url",
 						"type": "string",
-						"default": "http://203.245.41.143:8110/"
+						"default": "http://203.245.41.143:5000/"
 					}
 				}
 			}

@@ -11,7 +11,7 @@ export async function inviteMember(url: string, labName: string, info: vscode.Me
         'lab': labName
     };
 
-    axios.post(url, sendInfo, {auth: {username:token}})
+    await axios.post(url, sendInfo, {auth: {username:token}})
     .then((res:any) => {
         vscode.window.showInformationMessage(`Success to invite ${email} to ${labName}`);
     }).catch((err:any) => {
@@ -29,7 +29,7 @@ export async function inviteTA(url: string, labName: string, info: vscode.Mement
         'lab': labName
     };
 
-    axios.post(url, sendInfo, {auth: {username:token}})
+    await axios.post(url, sendInfo, {auth: {username:token}})
     .then((res:any) => {
         vscode.window.showInformationMessage(`Success to invite ${email} to ${labName}'s TA and invite to ${labName}`);
     }).catch((err:any) => {
@@ -45,7 +45,7 @@ export async function deleteMember(url: string, labName:string, userName:string,
         'lab': labName
     };
 
-    axios.post(url, sendInfo, {auth: {username:token}})
+    await axios.post(url, sendInfo, {auth: {username:token}})
     .then((res:any) => {
         vscode.window.showInformationMessage(`Success to delete ${userName} to ${labName}`);
     }).catch((err:any) => {

@@ -7,10 +7,10 @@ import { login, logout } from './login';
 import { chatOpenPanel } from './chat';
 import { monitoringOpenPanel, initializeLog, sendLog, stopLog } from './monitoring';
 import { uploadProblem, deleteProblem, getProblemName, fetchProblem } from './problem';
-import { makeLab, deleteLab, fetchInfo, getVideoPath, getUsername } from './lab';
+import { makeLab, deleteLab, fetchInfo } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA, deleteMember } from './member';
-import { downloadVideo, uploadVideo, uploadVideoTA } from './video';
+import { downloadVideo, uploadVideo, uploadVideoTA, deleteVideo } from './video';
 
 export function activate(context: vscode.ExtensionContext) {
 	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -27,6 +27,11 @@ export function activate(context: vscode.ExtensionContext) {
 	const deleteMemberUrl = 'api/v1/deleteStudentFromLab';
 	const logUrl = 'api/v1/logs/DS';
 	const videoUrl = 'api/v1/video/';
+
+	// chronicle 변수
+	const editJsonFile = require("edit-json-file");
+	const home = process.env.HOME || process.env.USERPROFILE;
+	const settingFileName = editJsonFile(`${home}/Library/Application\ Support/Code/User/settings.json`);
 	
 	const labProvider = new LabProvider(rootPath, info);
 	vscode.window.registerTreeDataProvider('labView', labProvider); // treeData 등록
@@ -186,59 +191,59 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
+
 	// 비디오 녹화 시작
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoRecord', () => {
-		const editJsonFile = require("edit-json-file");
-		const home = process.env.HOME || process.env.USERPROFILE;
-		const fileName = editJsonFile(`${home}/Library/Application\ Support/Code/User/settings.json`);
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoRecord', async (item) => {
 		console.log('command : videoRecord');
 
-		getVideoPath()
-		.then(async (res: any)=> {
-
-			fileName.set("chronicler.dest-folder", rootPath + '/' + res);
-
-			fileName.save();
+		if(rootPath){
+			settingFileName.set("chronicler.dest-folder", path.join(rootPath, item.labName));
+			settingFileName.save();
 
 			await vscode.commands.executeCommand('chronicler.recordWithAudio');
-
-		});
-
+		}
 	}));
+	// 비디오 녹화 종료
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoRecordStop', () => {
+		console.log('command : videoRecordStop');
 
-	//video 업로드
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadStudent', () => {
-		
-		getVideoPath()
-		.then(async (res: any)=> {
-
-			uploadVideo(urlJoin(rootUrl, videoUrl, res), rootPath + '/' + res, info);
-
-		});
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadTA', () => {
-		
-		getVideoPath()
-		.then(async (res: any)=> {
-			getUsername()
-			.then(async (res2: any) => {
-				uploadVideoTA(urlJoin(rootUrl, videoUrl, res, res2), rootPath + '/' + res, info);
-			});
-		});
+		if(rootPath){
+			vscode.commands.executeCommand('chronicler.stop');
+		}
 	}));
 
 
-	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.downVideo', () => {
-		
-		getVideoPath()
-		.then(async (res: any)=> {
-			getUsername()
-			.then(async (res2: any) => {
-				downloadVideo(urlJoin(rootUrl, videoUrl, res, res2), rootPath + '/' + res + '/' + res2, info, res2);
-			});
-		});
+	// video 학생 업로드
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadStudent', (item) => {
+		console.log('command : videoUploadStudent');
+		if(rootPath){
+			uploadVideo(urlJoin(rootUrl, videoUrl, item.labName), path.join(rootPath, item.labName), info);
+		}
+	}));
 
+	// video TA 업로드
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoUploadTA', (item) => {
+		console.log('command : videoUploadTA');
+		if(rootPath){
+			uploadVideoTA(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName), info);
+		}
+	}));
+
+	// admin 비디오 다운로드
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.downloadVideo', (item) => {
+		console.log('command : downloadVideo');
+		if(rootPath){
+			downloadVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName, item.label), info, item.labName, item.label);
+		}
+	}));
+
+	// admin, student 비디오 삭제
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.videoDelete', (item) => {
+		console.log('command : videoDelete');
+
+		if(rootPath){
+			deleteVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName, item.label), info);
+		}
 	}));
 	
 

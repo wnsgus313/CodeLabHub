@@ -23,7 +23,7 @@ export async function login(info: vscode.Memento, url: string) {
 	info.update('email', email);
 	info.update('password', password);
 
-	saveToken(info, url);
+	await saveToken(info, url);
 }
 
 async function saveToken(info: vscode.Memento, url: string) {

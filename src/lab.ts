@@ -11,7 +11,7 @@ export async function makeLab(url: string, targetPath: string, info: vscode.Meme
         'labName': labName
     };
 
-    axios.post(url, sendName, {auth: {username:token}})
+    await axios.post(url, sendName, {auth: {username:token}})
 		.then((res:any) => {
             if(labName){
                 if(!fs.existsSync(path.join(targetPath, labName))){
@@ -39,7 +39,7 @@ export async function deleteLab(url: string, info: vscode.Memento, labName: stri
         'deleteLab': labName
     };
 
-    vscode.window.showInformationMessage(`Do you want to delete ${labName} ?`, "Yes", "No")
+    await vscode.window.showInformationMessage(`Do you want to delete ${labName} ?`, "Yes", "No")
         .then(answer => {
             if (answer === "Yes") {
 				axios.post(url, sendName, {auth: {username:token}})
@@ -59,7 +59,7 @@ export async function deleteLab(url: string, info: vscode.Memento, labName: stri
 export async function fetchInfo(url: string | undefined, targetPath: string, info: any) {
 	const token = await info.get('token');
 
-	axios.get(url, {auth: {username:token}})
+	await axios.get(url, {auth: {username:token}})
 	.then((res:any) => {
 		console.log(JSON.stringify(res.data));
 		fs.writeFileSync(targetPath, JSON.stringify(res.data));
@@ -67,14 +67,4 @@ export async function fetchInfo(url: string | undefined, targetPath: string, inf
 	}).catch((err:any) => {
 		vscode.window.showErrorMessage(`Fetch info failed!`);
 	});
-}
-
-export async function getVideoPath(){
-    let labName = await getLabName();
-    return labName;
-}
-
-export async function getUsername(){
-    let labName = await getLabName();
-    return labName;
 }

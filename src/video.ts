@@ -4,19 +4,31 @@ import * as path from 'path';
 import got from 'got';
 import { downloadImage } from './problem';
 import FormData = require('form-data');
+import urlJoin from 'url-join';
+
+const axios = require('axios');
+
+const reg = /(.*?)\.(mp4|avi)$/;
+
+function getVideoName()
+{
+    return vscode.window.showInputBox({
+		prompt: 'Video file',
+        ignoreFocusOut: true
+	});
+}
 
 export async function uploadVideo(url: string, targetPath: string, info: vscode.Memento) {
     const formData = new FormData();
     const token = await info.get('token');
 
-    let fileLists: string[] = fs.readdirSync(targetPath);
+    const videoName = await getVideoName();
 
-    fileLists.forEach((file) => {
-        let reg = /(.*?)\.(mp4|avi)$/;
-        if (file.match(reg)) {
-            formData.append('file', fs.createReadStream(path.join(targetPath, file)), file);
-        }
-    });
+    if (videoName?.match(reg)) {
+        formData.append('file', fs.createReadStream(path.join(targetPath, videoName)), videoName);
+    }else {
+        vscode.window.showErrorMessage(`Video file extension must be 'mp4' or 'avi'`);
+    }
 
     const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
@@ -28,7 +40,7 @@ export async function uploadVideo(url: string, targetPath: string, info: vscode.
             }
         });
 
-        vscode.window.showInformationMessage('Sucess upload video');
+        vscode.window.showInformationMessage('Success upload video');
     } catch (e) {
         vscode.window.showErrorMessage(`Video upload failed`);
     }
@@ -38,14 +50,14 @@ export async function uploadVideoTA(url: string, targetPath: string, info: vscod
     const formData = new FormData();
     const token = await info.get('token');
 
-    let fileLists: string[] = fs.readdirSync(targetPath);
+    const videoName = await getVideoName();
 
-    fileLists.forEach((file) => {
-        let reg = /(.*?)\.(mp4|avi)$/;
-        if (file.match(reg)) {
-            formData.append('file', fs.createReadStream(path.join(targetPath, file)), file);
-        }
-    });
+    if (videoName?.match(reg)) {
+        formData.append('file', fs.createReadStream(path.join(targetPath, videoName)), videoName);
+    }else {
+        vscode.window.showErrorMessage(`Video file extension must be 'mp4' or 'avi'`);
+    }
+
 
     const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
@@ -57,40 +69,43 @@ export async function uploadVideoTA(url: string, targetPath: string, info: vscod
             }
         });
 
-        vscode.window.showInformationMessage('Sucess upload video');
+        vscode.window.showInformationMessage('Success upload video');
     } catch (e) {
         vscode.window.showErrorMessage(`Video upload failed`);
     }
 }
 
-export async function downloadVideo(url: string, targetPath: string, info: vscode.Memento, res2: string) {
-
-
-    const axios = require('axios');
-
+export async function downloadVideo(url: string, targetPath: string, info: vscode.Memento, labName: string, fileName: string) {
     const token = await info.get('token');
 
     const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
+
+    if (!fs.existsSync(targetPath)) {
+        fs.mkdirSync(targetPath);
+    }
+
+    const saveFilePath = path.join(targetPath, fileName);
     axios.get(url, { auth: { username: token } })
     .then((res: any) => {
-        if (!fs.existsSync(targetPath)) {
-            fs.mkdirSync(targetPath);
-        }
-        res.data['file_list'].forEach((filename: string) => {
-            const saveFilePath = targetPath  + '/' + filename;
-            axios.get(url, { auth: { username: token } })
-            .then((res: any) => {
-                downloadImage(url + '/' + filename, saveFilePath, auth);
-                vscode.window.showInformationMessage(`${filename} save successfully.`);
-            })
-            .catch((err: any) => {
-                vscode.window.showErrorMessage(`Fail save ${filename} in ${res2}`);
-            });
-        });
+        downloadImage(urlJoin(url, fileName), saveFilePath, auth);
+        vscode.window.showInformationMessage(`${fileName} download successfully.`);
     })
     .catch((err: any) => {
-        vscode.window.showErrorMessage(`모르겠어요`);
+        vscode.window.showErrorMessage(`Fail download ${fileName} in ${labName}`);
     });
 }
 
+export async function deleteVideo(url: string, targetPath: string, info: vscode.Memento) {
+    const token = await info.get('token');
+
+    const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
+
+    axios.delete(url, { auth: { username: token }})
+    .then((res: any) => {
+        vscode.window.showInformationMessage(`Video delete successful`);
+    })
+    .catch((err: any) => {
+        vscode.window.showErrorMessage(`Video delete Fail`);
+    });
+}

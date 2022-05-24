@@ -52,6 +52,9 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             else if(element.contextValue?.substring(0, 18) === 'submission_problem'){
                 return Promise.resolve(this.makeSubmission(labJsonPath, element.order, element.role, element.label, element.labName));
             }
+            else if(element.contextValue?.substring(0, 6) === 'videos'){
+                return Promise.resolve(this.makeVideo(labJsonPath, element.order, element.role, element.labName));
+            }
 
 			return Promise.resolve([]);
 		} else {
@@ -82,7 +85,7 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
             this.info.update('lab_count', Object.keys(labJson['labs']).length); // lab의 개수 저장
             let res = labs.map((lab, index) => parseLab(lab, index));
 
-			return res.concat(new Dependency('Useful Extensions', vscode.TreeItemCollapsibleState.Collapsed, "useful_extension"));
+			return res; //.concat(new Dependency('Useful Extensions', vscode.TreeItemCollapsibleState.Collapsed, "useful_extension"));
 		} else {
 			return [];
 		}
@@ -169,6 +172,28 @@ export class LabProvider implements vscode.TreeDataProvider<Dependency> {
                 members.push(labJson['labs'][order]['members'][i]['name']);
             }
             let res = members.map((member, index) => parseMember(member, index));
+
+			return res;
+		} else {
+			return [];
+		}
+    }
+
+    // video 추가
+    private makeVideo(labJsonPath: string, order: number | any, role: string | any, labName: string | any){
+        if (this.pathExists(labJsonPath)) {
+			const labJson = JSON.parse(fs.readFileSync(labJsonPath, 'utf-8'));
+            console.log('makeVideo');
+            
+			const parseVideo = (video: string, index: number): Dependency => {
+				return new Dependency(video, vscode.TreeItemCollapsibleState.None, 'video_' + role, order, role, labName, labJson['labs'][order]['videos'][index]['status']); // problem들 가져오기
+			};
+
+            let videos:string[] = [];
+            for(let i=0; i<Object.keys(labJson['labs'][order]['videos']).length; i++){
+                videos.push(labJson['labs'][order]['videos'][i]['name']);
+            }
+            let res = videos.map((video, index) => parseVideo(video, index));
 
 			return res;
 		} else {
