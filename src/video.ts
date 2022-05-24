@@ -86,9 +86,9 @@ export async function downloadVideo(url: string, targetPath: string, info: vscod
     }
 
     const saveFilePath = path.join(targetPath, fileName);
-    axios.get(url, { auth: { username: token } })
-    .then((res: any) => {
-        downloadImage(urlJoin(url, fileName), saveFilePath, auth);
+    await axios.get(url, { auth: { username: token } })
+    .then(async (res: any) => {
+        await downloadImage(urlJoin(url), saveFilePath, auth);
         vscode.window.showInformationMessage(`${fileName} download successfully.`);
     })
     .catch((err: any) => {
@@ -101,7 +101,7 @@ export async function deleteVideo(url: string, targetPath: string, info: vscode.
 
     const auth = 'Basic ' + Buffer.from(token + ':').toString('base64');
 
-    axios.delete(url, { auth: { username: token }})
+    await axios.delete(url, { auth: { username: token }})
     .then((res: any) => {
         vscode.window.showInformationMessage(`Video delete successful`);
     })

@@ -98,7 +98,6 @@ export function activate(context: vscode.ExtensionContext) {
 		if(rootPath){
 			await saveAllStudentCode(urlJoin(rootUrl, codesUrl, item.labName, item.label), item.label, path.join(rootPath, item.labName, item.label + '_code'), info);
 		}
-		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin이 Lab 만들기
@@ -169,8 +168,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.labChat', (item) => {
 		console.log('command : labChat');
 		chatOpenPanel(urlJoin(rootUrl, item.labName, 'chat'), info);
-
-		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// student 모니터링 log 시작
@@ -178,8 +175,6 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log('command : sendLog');
 
 		sendLog(urlJoin(rootUrl, logUrl), info);
-
-		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// student 모니터링 log 중지
@@ -187,8 +182,6 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log('command : stopLog');
 
 		stopLog(urlJoin(rootUrl, logUrl), info);
-
-		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 
@@ -219,6 +212,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if(rootPath){
 			uploadVideo(urlJoin(rootUrl, videoUrl, item.labName), path.join(rootPath, item.labName), info);
 		}
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// video TA 업로드
@@ -227,13 +221,14 @@ export function activate(context: vscode.ExtensionContext) {
 		if(rootPath){
 			uploadVideoTA(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName), info);
 		}
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin 비디오 다운로드
 	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.downloadVideo', (item) => {
 		console.log('command : downloadVideo');
 		if(rootPath){
-			downloadVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName, item.label), info, item.labName, item.label);
+			downloadVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName), info, item.labName, item.label);
 		}
 	}));
 
@@ -244,6 +239,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if(rootPath){
 			deleteVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName, item.label), info);
 		}
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 	
 

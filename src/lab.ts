@@ -40,9 +40,9 @@ export async function deleteLab(url: string, info: vscode.Memento, labName: stri
     };
 
     await vscode.window.showInformationMessage(`Do you want to delete ${labName} ?`, "Yes", "No")
-        .then(answer => {
+        .then(  async (answer) => {
             if (answer === "Yes") {
-				axios.post(url, sendName, {auth: {username:token}})
+				await axios.post(url, sendName, {auth: {username:token}})
 				.then((res:any) => {
 					vscode.window.showInformationMessage(`Delete Lab successfully.`);
 					vscode.commands.executeCommand('extension.getLabs');

@@ -41,7 +41,7 @@ export async function uploadProblem(url:string, targetPath:string, info:vscode.M
 		'filename': filename,
 		'file': filedata
 	};
-	axios.post(url, {files}, {auth: {username:token}})
+	await axios.post(url, {files}, {auth: {username:token}})
 	.then(async (res:any) => {
 		await uploadPdf(url, targetPath, info, problemName);
 	}).catch((err:any) => {
@@ -82,9 +82,9 @@ export async function deleteProblem(url:string, title:string, info:vscode.Mement
 	const token = await info.get('token');
 
 	vscode.window.showInformationMessage(`Do you want to delete ${title} ?`, "Yes", "No")
-	.then(answer => {
+	.then(async (answer) => {
 		if (answer === "Yes") {
-			axios.delete(url, {auth: {username:token}})
+			await axios.delete(url, {auth: {username:token}})
 			.then((res:any) => {
 				vscode.window.showInformationMessage(`${title} delete successfully.`);
 			}).catch((err:any) => {
@@ -106,17 +106,17 @@ export async function fetchProblem(url:string, title:string, targetPath:string, 
 		return;
 	}
 
-	axios.get(url, {auth: {username:token}})
+	await axios.get(url, {auth: {username:token}})
 	.then((res:any) => {
 		if(!fs.existsSync(targetPath)){
 			fs.mkdirSync(targetPath);
 		}
 		
-		res.data['file_list'].forEach((filename:string) => {
+		res.data['file_list'].forEach(async (filename:string) => {
 			const saveFilePath = path.join(targetPath, filename);
 			let reg = /(.*?)\.(pdf)$/;
 			if (!filename.match(reg)){
-				axios.get(urlJoin(url, filename), {auth: {username:token}})
+				await axios.get(urlJoin(url, filename), {auth: {username:token}})
 				.then((res:any) => {
 					fs.writeFileSync(saveFilePath, res.data);
 				})
@@ -125,7 +125,7 @@ export async function fetchProblem(url:string, title:string, targetPath:string, 
 				});
 			}
 			else {
-				downloadImage(urlJoin(url, filename + '.pdf'), saveFilePath, auth);
+				await downloadImage(urlJoin(url, filename + '.pdf'), saveFilePath, auth);
 			}
 		});
 

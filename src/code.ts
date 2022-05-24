@@ -29,7 +29,7 @@ export async function submitCode(url:string, title:string, targetPath:string, in
 		
 	});
 
-	axios.post(url, {files}, {auth: {username:token}})
+	await axios.post(url, {files}, {auth: {username:token}})
 	.then((res:any) => {
 		vscode.window.showInformationMessage(res.data['message']);
 	}).catch((err:any) => {
