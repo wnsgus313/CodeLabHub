@@ -39,6 +39,8 @@ let timer: any;
 let editor: vscode.TextEditor | undefined;
 let minuteOne: string = '0';
 let oneMinute:number = 0;
+let saveThing: number = 0;
+
 export function sendLog(url: string, info: vscode.Memento) {
     editor = vscode.window.activeTextEditor;
 
@@ -52,11 +54,16 @@ export function sendLog(url: string, info: vscode.Memento) {
             oneMinute++; 
             minuteOne = oneMinute.toString(); 
         }
+        else {
+            oneMinute += 0; 
+            minuteOne = oneMinute.toString();
+        }
     });
     endFlag = true;
     clearTimeout(timer);
-    timer = setInterval(()=>startTraining(url, editor?.document.getText(), info), 4000);
+    timer = setInterval(()=>startTraining(url, editor?.document.getText(), info), 10000);
     let saveOne = editor?.document.getText();
+    oneMinute = 0;
 }
 
 export async function stopLog(url: string, info: vscode.Memento) {
@@ -69,13 +76,17 @@ export async function stopLog(url: string, info: vscode.Memento) {
     let logs = {
         'flag': 1,
         'code': editor?.document.getText(),
-        'length': minuteOne
+        'length': 0
     };
 
     axios.post(url, logs, {auth: {username:token}})
     .then((res:any) => {
         vscode.window.showInformationMessage(`Sending log successfully stop.`);
+    }).finally(() => {
+        saveThing = 0;
     });
+
+    saveThing = 0;
 }
 
 export async function startTraining(url: string, send: any, info: vscode.Memento) {
@@ -84,22 +95,53 @@ export async function startTraining(url: string, send: any, info: vscode.Memento
 	{
 		const token = info.get('token');
 
-		let oneMinute = Number(minuteOne);
+		let one = Number(minuteOne);
 
-		let logs = {
-			'flag': 0,
-			'code': send,
-			'length': oneMinute
-		};
+        let logs = {
+            'flag': 0,
+            'code': send,
+            'length': 0
+        };
+
+        if (one === 0) {
+            logs = {
+                'flag': 0,
+                'code': send,
+                'length': 0
+            };
+            oneMinute = 0;
+            saveThing = 0;
+            one = 0;
+        }
+        else if(saveThing >= one) {
+            logs = {
+                'flag': 0,
+                'code': send,
+                'length': one
+            };
+        }
+        else if (one > saveThing) {
+            logs = {
+                'flag': 0,
+                'code': send,
+                'length': one - saveThing
+            };
+        }
 
 		axios.post(url, logs, {auth: {username:token}})
 		.then((res:any) => {
-			vscode.window.showInformationMessage(`${oneMinute}`);
+			// vscode.window.showInformationMessage(`${oneMinute}`);
 		}).catch((err:any) => {
 			vscode.window.showErrorMessage(`Please open your editor!`);
 		}).finally(() => {
             minuteOne = '0';
             oneMinute = 0;
+            one = 0;
         });
+        saveThing = oneMinute;
+        if (saveThing === 0) {
+            oneMinute = 0;
+            one = 0;
+        }
 	}		
 }

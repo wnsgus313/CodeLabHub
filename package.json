@@ -352,7 +352,7 @@
 					"codelabhub.root-url": {
 						"description": "Server root url",
 						"type": "string",
-						"default": "http://203.245.41.143:5000/"
+						"default": "http://203.245.41.143:8110/"
 					}
 				}
 			}
