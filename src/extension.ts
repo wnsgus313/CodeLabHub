@@ -11,6 +11,7 @@ import { makeLab, deleteLab, fetchInfo } from './lab';
 import { saveAllStudentCode, submitCode } from './code';
 import { inviteMember, inviteTA, deleteMember } from './member';
 import { downloadVideo, uploadVideo, uploadVideoTA, deleteVideo } from './video';
+import { getFirstWebview } from './view';
 
 export function activate(context: vscode.ExtensionContext) {
 	const rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
@@ -240,6 +241,37 @@ export function activate(context: vscode.ExtensionContext) {
 			deleteVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName, item.label), info);
 		}
 		vscode.commands.executeCommand('codelabhub.refreshLab');
+	}));
+
+
+	// 메인화면
+	context.subscriptions.push(vscode.commands.registerCommand('codelabhub.firstView', async () => {
+		// Create and show panel
+		const panel = vscode.window.createWebviewPanel(
+		'firstView',
+		'Welcome CodeLabHub',
+		vscode.ViewColumn.One,
+		{
+			enableScripts: true,
+			retainContextWhenHidden: true,
+			enableCommandUris: true,
+			enableFindWidget: true,
+		}
+		);
+
+		const axios = require('axios');
+
+		let token = await info.get('token');
+
+		let url = 'http://203.245.41.143:8110/firstView';
+
+		await axios.get(url, {auth: {username:token}})
+		.then((res:any) => {
+			panel.webview.html = getFirstWebview(res.data['users'], res.data['curr']);
+		}).catch((err:any) => {
+			vscode.window.showErrorMessage(`Start Error`);
+		});
+
 	}));
 	
 

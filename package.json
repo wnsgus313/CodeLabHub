@@ -34,6 +34,7 @@
 		"onCommand:codelabhub.videoUploadTA",
 		"onCommand:codelabhub.downloadVideo",
 		"onCommand:codelabhub.videoDelete",
+		"onCommand:codelabhub.firstView",
 		"onView:labView",
 		"onView:login",
 		"onView:logout"
@@ -187,6 +188,11 @@
 				"command": "codelabhub.videoDelete",
 				"title": "Video delete",
 				"icon": "$(trash)",
+				"category": "CodeLabHub"
+			},
+			{
+				"command": "codelabhub.firstView",
+				"title": "Main Page",
 				"category": "CodeLabHub"
 			}
 		],

@@ -99,7 +99,7 @@ export function getLogWebviewContent(url: string, token: any)
 	`;
 }
 
-export function getFirstWebview(username: any) {
+export function getFirstWebview(username: any, curr: any) {
     return `<!DOCTYPE html>
     <html>
     <head>
@@ -150,6 +150,8 @@ export function getFirstWebview(username: any) {
     <div class="w3-display-middle" style="white-space:nowrap;">
         <div>
             <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">WE HAVE <span class="w3-hide-small">${username}</span> USERS</span>
+            <div></div>
+            <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">There are <span class="w3-hide-small">${curr}</span> user(s) sign-in</span>
         </div>
     </div>
     <span class="w3-center w3-padding-large w3-black w3-xlarge w3-wide w3-animate-opacity">WELCOME TO CODELABHUB</span>
