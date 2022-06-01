@@ -61,7 +61,7 @@ export function sendLog(url: string, info: vscode.Memento) {
     });
     endFlag = true;
     clearTimeout(timer);
-    timer = setInterval(()=>startTraining(url, editor?.document.getText(), info), 10000);
+    timer = setInterval(()=>startTraining(url, editor?.document.getText(), info), 2000);
     let saveOne = editor?.document.getText();
     oneMinute = 0;
 }

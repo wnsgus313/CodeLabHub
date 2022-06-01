@@ -263,7 +263,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		let token = await info.get('token');
 
-		let url = 'http://203.245.41.143:8110/firstView';
+		let url = 'http://siskin21.cafe24.com/codelab/firstView';
 
 		await axios.get(url, {auth: {username:token}})
 		.then((res:any) => {
@@ -273,6 +273,8 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 	}));
+
+	vscode.commands.executeCommand('codelabhub.firstView');
 	
 
 }

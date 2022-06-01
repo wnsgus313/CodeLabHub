@@ -200,7 +200,7 @@
 			"activitybar": [
 				{
 					"id": "CodeLabHub",
-					"title": "CodeLabHub",
+					"title": "CodeLabStudio",
 					"icon": "media/dep.png"
 				}
 			]
@@ -358,7 +358,7 @@
 					"codelabhub.root-url": {
 						"description": "Server root url",
 						"type": "string",
-						"default": "http://203.245.41.143:8110/"
+						"default": "http://siskin21.cafe24.com/codelab/"
 					}
 				}
 			}
@@ -395,6 +395,7 @@
 		"axios": "^0.27.2",
 		"edit-json-file": "^1.7.0",
 		"got": "^12.0.4",
+		"strftime": "^0.10.1",
 		"url-join": "^5.0.0"
 	}
 }
