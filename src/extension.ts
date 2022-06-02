@@ -231,6 +231,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if(rootPath){
 			downloadVideo(urlJoin(rootUrl, videoUrl, item.labName, item.label), path.join(rootPath, item.labName), info, item.labName, item.label);
 		}
+		vscode.commands.executeCommand('codelabhub.refreshLab');
 	}));
 
 	// admin, student 비디오 삭제
