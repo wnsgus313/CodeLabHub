@@ -1,4 +1,5 @@
 # CodelabStudio: VS Code 기반 프로그래밍 교육 서비스(vscode extension)
+이전 repository https://github.com/wnsgus313/codelab_extension
 
 # 시스템 디자인
 <img width="821" alt="스크린샷 2023-04-10 오전 5 44 46" src="https://user-images.githubusercontent.com/37920523/230795726-f7425e74-2d59-4ad5-9766-51596157ce80.png">
